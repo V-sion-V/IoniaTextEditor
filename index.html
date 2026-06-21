@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="像使用轻量 Word 一样编写游戏文案，并转换为 Unity Rich Text。"
+    />
+    <title>Ionia · Unity Rich Text Editor</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="ambient ambient-one"></div>
+    <div class="ambient ambient-two"></div>
+
+    <main class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">IONIA WRITING TOOLS</p>
+          <h1>把心里的故事，<span>写进游戏。</span></h1>
+          <p class="subtitle">像编辑文档一样编写文案，自动得到可粘贴进 Unity 的 Rich Text。</p>
+        </div>
+        <div class="unity-badge" aria-label="Unity Rich Text 转换器">
+          <span class="status-dot"></span>
+          UNITY RICH TEXT
+        </div>
+      </header>
+
+      <section class="workspace" aria-label="Unity 富文本编辑器">
+        <div class="panel editor-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="step">01</span>
+              <h2>编辑文案</h2>
+            </div>
+            <span id="characterCount" class="character-count">0 字</span>
+          </div>
+
+          <div id="toolbar" class="toolbar" role="toolbar" aria-label="文本格式工具栏">
+            <div class="tool-group">
+              <button class="tool-button" type="button" data-command="undo" title="撤销 (Ctrl+Z)" aria-label="撤销">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4 12l5 5M5 12h8a6 6 0 0 1 6 6"/></svg>
+              </button>
+              <button class="tool-button" type="button" data-command="redo" title="重做 (Ctrl+Y)" aria-label="重做">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 7 5 5-5 5m4-5h-8a6 6 0 0 0-6 6"/></svg>
+              </button>
+            </div>
+
+            <div class="separator"></div>
+
+            <div class="tool-group">
+              <button class="tool-button text-tool" type="button" data-command="bold" title="加粗 (Ctrl+B)" aria-label="加粗"><strong>B</strong></button>
+              <button class="tool-button text-tool" type="button" data-command="italic" title="斜体 (Ctrl+I)" aria-label="斜体"><em>I</em></button>
+              <button class="tool-button" type="button" data-command="removeFormat" title="清除格式" aria-label="清除格式">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 20 16-16M6 4h12M11 4 7.5 15M4 15h8"/></svg>
+              </button>
+            </div>
+
+            <div class="separator"></div>
+
+            <label class="select-wrap" title="字号">
+              <span class="sr-only">字号</span>
+              <select id="fontSize" aria-label="字号">
+                <option value="16">16 px</option>
+                <option value="18">18 px</option>
+                <option value="20" selected>20 px</option>
+                <option value="24">24 px</option>
+                <option value="28">28 px</option>
+                <option value="32">32 px</option>
+                <option value="40">40 px</option>
+                <option value="48">48 px</option>
+              </select>
+            </label>
+
+            <div class="color-picker">
+              <button
+                id="colorMenuButton"
+                class="color-tool"
+                type="button"
+                title="文字颜色"
+                aria-label="打开文字颜色调色盘"
+                aria-expanded="false"
+                aria-controls="colorPopover"
+              >
+                <span class="color-letter">A</span>
+                <span id="colorIndicator" class="color-indicator"></span>
+              </button>
+
+              <div id="colorPopover" class="color-popover" role="dialog" aria-label="文字颜色调色盘" hidden>
+                <div class="color-popover-heading">
+                  <strong>预设颜色</strong>
+                  <span>点击应用 · × 删除</span>
+                </div>
+                <div id="colorPresets" class="color-presets" aria-label="预设颜色列表"></div>
+                <div class="custom-color-row">
+                  <label class="custom-color-input" title="选择自定义颜色">
+                    <input id="textColor" type="color" value="#e6b86a" aria-label="自定义文字颜色" />
+                    <span id="customColorValue">#E6B86A</span>
+                  </label>
+                  <button id="applyCustomColor" type="button">应用</button>
+                  <button id="saveCustomColor" type="button" title="加入预设颜色">＋预设</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="toolbar-spacer"></div>
+
+            <button id="clearEditor" class="plain-button" type="button">清空</button>
+          </div>
+
+          <div
+            id="editor"
+            class="editor"
+            contenteditable="true"
+            role="textbox"
+            aria-multiline="true"
+            data-placeholder="在这里写下你的游戏文案……"
+            spellcheck="true"
+          ></div>
+
+          <p class="editor-hint">选择文字后设置样式；Enter 换行，Shift + Enter 插入软换行。</p>
+        </div>
+
+        <div class="conversion-arrow" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+        </div>
+
+        <div class="panel output-panel">
+          <div class="panel-heading">
+            <div>
+              <span class="step">02</span>
+              <h2>Unity 输出</h2>
+            </div>
+            <span class="live-label"><span></span>JSON 实时转换</span>
+          </div>
+
+          <div class="code-wrap">
+            <textarea id="unityOutput" readonly spellcheck="false" aria-label="JSON 转义后的 Unity Rich Text 输出"></textarea>
+            <span class="json-hint">JSON VALUE · 不含外层引号</span>
+            <button id="copyOutput" class="copy-button" type="button">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="11" height="11" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/></svg>
+              <span>复制代码</span>
+            </button>
+          </div>
+
+          <div class="preview-block">
+            <div class="preview-title">
+              <span>效果预览</span>
+              <small>近似 Unity 显示效果</small>
+            </div>
+            <div id="preview" class="preview" aria-live="polite"></div>
+          </div>
+        </div>
+      </section>
+
+      <footer>
+        <span>支持</span>
+        <code>&lt;b&gt;</code>
+        <code>&lt;i&gt;</code>
+        <code>&lt;color&gt;</code>
+        <code>&lt;size&gt;</code>
+        <span>及多行文本</span>
+      </footer>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="./converter.js"></script>
+    <script src="./app.js"></script>
+  </body>
+</html>

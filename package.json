@@ -1,0 +1,9 @@
+{
+  "name": "ionia-text-editor",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A visual Unity Rich Text editor for game writing.",
+  "scripts": {
+    "test": "node --test converter.test.js"
+  }
+}
