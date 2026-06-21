@@ -15,10 +15,14 @@
   const customColorValue = document.querySelector("#customColorValue");
   const applyCustomColorButton = document.querySelector("#applyCustomColor");
   const saveCustomColorButton = document.querySelector("#saveCustomColor");
+  const importPaletteButton = document.querySelector("#importPalette");
+  const exportPaletteButton = document.querySelector("#exportPalette");
+  const paletteFileInput = document.querySelector("#paletteFileInput");
   const fontSizeSelect = document.querySelector("#fontSize");
   const characterCount = document.querySelector("#characterCount");
   const toast = document.querySelector("#toast");
   const { elementToUnityRichText, escapeForJsonValue } = window.UnityRichTextConverter;
+  const { parsePalette, serializePalette } = window.IoniaColorPalette;
 
   const COLOR_STORAGE_KEY = "ionia-text-editor-color-presets";
   const DEFAULT_COLORS = [
@@ -226,6 +230,42 @@
     showToast(`已删除预设 ${color}`);
   }
 
+  function exportPalette() {
+    try {
+      const paletteJson = serializePalette(presetColors);
+      const file = new Blob([paletteJson], { type: "application/json;charset=utf-8" });
+      const downloadUrl = URL.createObjectURL(file);
+      const downloadLink = document.createElement("a");
+      downloadLink.href = downloadUrl;
+      downloadLink.download = "ionia-color-palette.json";
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      downloadLink.remove();
+      window.setTimeout(() => URL.revokeObjectURL(downloadUrl), 0);
+      showToast(`已导出 ${presetColors.length} 个预设颜色`);
+    } catch (_) {
+      showToast("颜色预设导出失败");
+    }
+  }
+
+  async function importPalette(file) {
+    if (!file) return;
+
+    try {
+      const paletteJson = await file.text();
+      presetColors = parsePalette(paletteJson);
+      savePresetColors();
+      renderColorPresets();
+      setColorMenuOpen(true);
+      showToast(`已导入 ${presetColors.length} 个预设颜色`);
+    } catch (error) {
+      const reason = error instanceof Error ? error.message : "文件格式无效";
+      showToast(`导入失败：${reason}`);
+    } finally {
+      paletteFileInput.value = "";
+    }
+  }
+
   async function copyOutput() {
     if (!output.value) {
       showToast("还没有可复制的内容");
@@ -281,6 +321,9 @@
 
   applyCustomColorButton.addEventListener("click", () => applyColor(colorInput.value));
   saveCustomColorButton.addEventListener("click", addCustomColor);
+  importPaletteButton.addEventListener("click", () => paletteFileInput.click());
+  exportPaletteButton.addEventListener("click", exportPalette);
+  paletteFileInput.addEventListener("change", () => importPalette(paletteFileInput.files?.[0]));
 
   fontSizeSelect.addEventListener("change", () => applyFontSize(fontSizeSelect.value));
 

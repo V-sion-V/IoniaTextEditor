@@ -4,6 +4,6 @@
   "private": true,
   "description": "A visual Unity Rich Text editor for game writing.",
   "scripts": {
-    "test": "node --test converter.test.js"
+    "test": "node --test converter.test.js palette.test.js"
   }
 }

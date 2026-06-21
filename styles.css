@@ -494,6 +494,36 @@ h2 {
   color: var(--gold);
 }
 
+.palette-file-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.palette-file-actions button {
+  height: 31px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: #aaa69d;
+  background: transparent;
+  font-size: 9px;
+  transition: 140ms ease;
+}
+
+.palette-file-actions button:hover {
+  border-color: var(--border-strong);
+  color: var(--gold);
+  background: var(--gold-soft);
+}
+
+.palette-file-hint {
+  margin: 7px 0 0;
+  color: #68655f;
+  font-size: 8px;
+  text-align: center;
+}
+
 .toolbar-spacer {
   flex: 1 0 12px;
 }

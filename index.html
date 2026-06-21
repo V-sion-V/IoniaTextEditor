@@ -101,6 +101,18 @@
                   <button id="applyCustomColor" type="button">应用</button>
                   <button id="saveCustomColor" type="button" title="加入预设颜色">＋预设</button>
                 </div>
+                <div class="palette-file-actions">
+                  <button id="importPalette" type="button">导入预设</button>
+                  <button id="exportPalette" type="button">导出预设</button>
+                  <input
+                    id="paletteFileInput"
+                    type="file"
+                    accept=".json,application/json"
+                    aria-label="选择颜色预设 JSON 文件"
+                    hidden
+                  />
+                </div>
+                <p class="palette-file-hint">导入会完整替换当前预设颜色</p>
               </div>
             </div>
 
@@ -167,6 +179,7 @@
     <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
     <script src="./converter.js"></script>
+    <script src="./palette.js"></script>
     <script src="./app.js"></script>
   </body>
 </html>
